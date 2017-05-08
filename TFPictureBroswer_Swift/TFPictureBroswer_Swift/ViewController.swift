@@ -12,6 +12,7 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var collectionViewLayout: UICollectionViewFlowLayout!
+    lazy var photoBrowserAnimator : TFPictureBroswerAnimator = TFPictureBroswerAnimator()
 
 
     let imgs = ["http://p2.so.qhimgs1.com/t016ebb96578fbd0cd2.jpg",
@@ -58,6 +59,10 @@ extension ViewController : UICollectionViewDelegate,UICollectionViewDataSource{
 
         print("--:\(indexPath.row)");
 
+        photoBrowserAnimator.presentedDelegate = self
+        photoBrowserAnimator.indexPath = indexPath
+        photoBrowserAnimator.dismissDelegate = self
+
         let pbVc = TFPictureBroswerController(indexPath: indexPath, picUrls: imgs)
         pbVc.modalPresentationStyle = .custom
 //        pbVc.transitioningDelegate = self
@@ -65,5 +70,56 @@ extension ViewController : UICollectionViewDelegate,UICollectionViewDataSource{
 
     }
 
+
 }
+
+extension ViewController : PictureBroswerAnimatorPresentedDelegate {
+    func startRect(indexPath: IndexPath) -> CGRect {
+        let cell = self.collectionView.cellForItem(at: indexPath)
+        if cell == nil {
+            return CGRect(x: 0, y: 0, width: 0, height: 0)
+        }
+
+        let startFrame = self.view.convert((cell?.frame)!, to: UIApplication.shared.keyWindow)
+        return startFrame
+    }
+
+    func endRect(indexPath: IndexPath) -> CGRect {
+        return CGRect(x: 100, y: 100, width: 100, height: 100)
+    }
+
+
+    func imageView(indexPath:IndexPath) -> UIImageView {
+        let imageView = UIImageView()
+        let cell = self.collectionView.cellForItem(at: indexPath)
+        if cell == nil {
+            return imageView
+        }
+
+        imageView = cell.icon
+
+        return imageView
+    }
+
+}
+
+extension ViewController : PictureBroswerAnimatorDismissDelegate {
+
+    func imageView(indexPath: IndexPath) -> UIImageView {
+
+    }
+
+    func indexPathForDismiss() -> IndexPath {
+
+    }
+    
+}
+
+
+
+
+
+
+
+
 
